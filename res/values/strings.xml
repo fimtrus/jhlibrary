@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="send">Send</string>
+    <string name="exit_text">뒤로가기 버튼을 한번더 누르시면 종료됩니다.</string>
+    <string name="get_started">To get started, log in using Facebook</string>
+    <string name="hint_message">Input message</string>
+    <string name="button_cancel_description">X 버튼</string>
+    <string name="title_update">업데이트</string>
+    <string name="update_description">업데이트가 있습니다. 업데이트하시겠습니까?</string>
+
+</resources>
