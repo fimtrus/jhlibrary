@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 
 public class ActivityManager {
-	
+	 
 	public static ArrayList<Activity> mActivityList = null;
 	
 	public static final Activity get( int i ) {
