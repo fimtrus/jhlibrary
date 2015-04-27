@@ -728,4 +728,31 @@ public class Util {
     	}
     	return false;
     }
+    
+	/**
+	 * 앱 캐시를 가차없이 지운다.
+	 */
+	public static void clearApplicationCache(Context context, File file) {
+	
+		File dir = null;
+	
+		if (file == null) {
+			dir = context.getCacheDir();
+		} else {
+			dir = file;
+		}
+	
+		if (dir == null)
+			return;
+	
+		File[] children = dir.listFiles();
+		try {
+			for (int i = 0; i < children.length; i++)
+				if (children[i].isDirectory())
+					Util.clearApplicationCache(context, children[i]);
+				else
+					children[i].delete();
+		} catch (Exception e) {
+		}
+	};
 }
