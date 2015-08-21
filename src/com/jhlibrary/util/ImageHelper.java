@@ -89,6 +89,11 @@ public class ImageHelper {
 			task.execute(url);
 		}
 	}
+	public static void download(String url, onDownloadCompleteListener listener) {
+			
+		ImageDownloaderTask task = new ImageDownloaderTask(url, listener);
+		task.execute(url);
+	}
 
 	private static boolean cancelPotentialDownload(String url, ImageView imageView) {
 		ImageDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
@@ -128,23 +133,7 @@ public class ImageHelper {
 		}
 	}
 	
-	/**
-	 * 두 이미지를 합성한다.
-	 * @param baseBmp
-	 * @param overlayBmp
-	 * @param distanceLeft
-	 * @param distanceTop
-	 * @return
-	 */
-	public static Bitmap overlayMark(Bitmap baseBmp, Bitmap overlayBmp, int distanceLeft, int distanceTop) {
-		
-		WeakReference<Bitmap> resultBitmapReference = new WeakReference<Bitmap>(Bitmap.createBitmap(baseBmp.getWidth() + distanceLeft, baseBmp.getHeight() + distanceTop,
-				baseBmp.getConfig()));
-		
-		WeakReference<Canvas> canvasReference = new WeakReference<Canvas>(new Canvas(resultBitmapReference.get()));
-		
-		canvasReference.get().drawBitmap(baseBmp, distanceLeft, distanceTop, null);
-		canvasReference.get().drawBitmap(overlayBmp, (baseBmp.getWidth() - overlayBmp.getWidth()) /2, (baseBmp.getHeight() - overlayBmp.getHeight()) /2, null);
-		return resultBitmapReference.get();
-	}
+	public static interface onDownloadCompleteListener {
+		void onComplete( Bitmap bitmap );
+	};
 }

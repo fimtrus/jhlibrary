@@ -20,15 +20,23 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.jhlibrary.util.ImageHelper.DownloadedDrawable;
+import com.jhlibrary.util.ImageHelper.onDownloadCompleteListener;
 
 public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
 	public String url;
 	public String targetUrl;
 	private WeakReference<ImageView> imageViewReference;
 
+	private ImageHelper.onDownloadCompleteListener mOnCompleteListener;
+	
 	public ImageDownloaderTask(String url, ImageView imageView) {
 		this.targetUrl = url;
 		this.imageViewReference = new WeakReference<ImageView>(imageView);
+	}
+	
+	public ImageDownloaderTask(String url, onDownloadCompleteListener listener) {
+		this.targetUrl = url;
+		this.mOnCompleteListener = listener;
 	}
 
 	@Override
@@ -41,16 +49,22 @@ public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
 		if (isCancelled()) {
 			bitmap = null;
 		}
-
-		if (imageViewReference != null) {
-			ImageView imageView = imageViewReference.get();
-			ImageDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
-
-			if (this == bitmapDownloaderTask) {
-				ImageHelper.mImageCache.put(targetUrl, bitmap);
-				imageView.setImageBitmap(bitmap);
+		
+		if ( mOnCompleteListener != null ) {
+			mOnCompleteListener.onComplete( bitmap );
+		} else {
+			
+			if (imageViewReference != null) {
+				ImageView imageView = imageViewReference.get();
+				ImageDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
+				
+				if (this == bitmapDownloaderTask) {
+					ImageHelper.mImageCache.put(targetUrl, bitmap);
+					imageView.setImageBitmap(bitmap);
+				}
 			}
 		}
+		
 	}
 
 	private ImageDownloaderTask getBitmapDownloaderTask(ImageView imageView) {
@@ -66,9 +80,11 @@ public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
 
 	static Bitmap downloadBitmap(String url) {
 		final HttpClient client = new DefaultHttpClient();
-		final HttpGet getRequest = new HttpGet(url);
+		HttpGet getRequest = null;
 
 		try {
+			getRequest = new HttpGet(url);
+			
 			HttpResponse response = client.execute(getRequest);
 			final int statusCode = response.getStatusLine().getStatusCode();
 			if (statusCode != HttpStatus.SC_OK) {
@@ -96,7 +112,10 @@ public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
 				}
 			}
 		} catch (Exception e) {
-			getRequest.abort();
+			if ( getRequest != null ) {
+				
+				getRequest.abort();
+			}
 		}
 		return null;
 	}
@@ -123,5 +142,10 @@ public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
 			}
 			return totalBytesSkipped;
 		}
+	}
+	
+	public void setOnDownloadCompleteListener ( ImageHelper.onDownloadCompleteListener listener) {
+		
+		this.mOnCompleteListener = listener;
 	}
 }
